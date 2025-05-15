@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Expense Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #eef2f3;
+    }
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #888;
+      padding: 8px;
+      text-align: left;
+    }
+    .results p {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monthly Expense Calculator</h1>
+
+  <!-- Input section for expenses -->
+  <div>
+    <label for="category">Category:</label>
+    <select id="category">
+      <option value="Groceries">Groceries</option>
+      <option value="Rent">Rent</option>
+      <option value="Transportation">Transportation</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Communication">Communication</option>
+      <option value="Gym">Gym</option>
+    </select>
+
+    <label for="amount">Amount ($):</label>
+    <input type="number" id="amount" placeholder="Amount">
+
+    <button type="button" onclick="handleAdd()">Add Expense</button>
+    <button type="button" onclick="handleCalculate()">Calculate</button>
+  </div>
+
+  <!-- Expenses Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Amount ($)</th>
+      </tr>
+    </thead>
+    <tbody id="expenseBody"></tbody>
+  </table>
+
+  <!-- Calculation Results -->
+  <div class="results">
+    <p id="total"></p>
+    <p id="average"></p>
+    <p id="top"></p>
+  </div>
+
+  <script>
+    let expenseRecords = [];
+
+    // Adds an expense entry to the internal array and updates display
+    function handleAdd() {
+      const categoryElem = document.getElementById('category');
+      const amountElem = document.getElementById('amount');
+      const value = parseFloat(amountElem.value);
+
+      if (!categoryElem.value || isNaN(value) || value <= 0) {
+        alert('Enter a valid category and amount.');
+        return;
+      }
+
+      expenseRecords.push({ type: categoryElem.value, cost: value });
+      renderTable();
+      amountElem.value = '';
+    }
+
+    // Refreshes the table based on current data
+    function renderTable() {
+      const tableBody = document.getElementById('expenseBody');
+      tableBody.innerHTML = '';
+
+      expenseRecords.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${item.type}</td><td>${item.cost.toLocaleString()}</td>`;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Computes totals, average, and top 3 largest entries
+    function handleCalculate() {
+      if (expenseRecords.length === 0) {
+        alert('Add some expenses first.');
+        return;
+      }
+
+      const totalSum = expenseRecords.reduce((acc, entry) => acc + entry.cost, 0);
+      const dailyAvg = totalSum / 30;
+
+      const topThree = [...expenseRecords]
+        .sort((a, b) => b.cost - a.cost)
+        .slice(0, 3);
+
+      document.getElementById('total').textContent = `Total Expenses: $${totalSum.toLocaleString()}`;
+      document.getElementById('average').textContent = `Average Daily Expense: $${dailyAvg.toFixed(2)}`;
+      document.getElementById('top').textContent = `Top 3 Expenses: ${topThree.map(x => `${x.type} ($${x.cost.toLocaleString()})`).join(', ')}`;
+    }
+  </script>
+</body>
+</html>
