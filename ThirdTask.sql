@@ -6,7 +6,7 @@ SELECT
 FROM 
     orders
 WHERE 
-    strftime('%Y-%m', order_date) = '2024-03';
+    order_date BETWEEN '2024-03-01' AND '2024-03-31';
 -- Expected Result: 27,000
 
 
